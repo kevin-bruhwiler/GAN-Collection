@@ -131,20 +131,22 @@ class GAN():
 
     def plot_images(self, save2file=False, fake=True, samples=16, noise=None, step=0):
         filename = 'mnist.png'
-        if fake:
-            if noise is None:
-                noise = np.random.uniform(-1.0, 1.0, size=[samples, 100])
-            else:
-                filename = "mnist_%d.png" % step
-            images = self.generator.predict(noise)
+        if noise is None:
+            noise = np.random.uniform(-1.0, 1.0, size=[samples, 100])
         else:
-            i = np.random.randint(0, self.real_images.shape[0], samples)
-            images = self.real_images[i, :, :, :]
+            filename = "mnist_%d.png" % step
+        fake_images = self.generator.predict(noise)
 
-        plt.figure(figsize=(10,10))
+        i = np.random.randint(0, self.real_images.shape[0], samples)
+        images = self.real_images[i, :, :, :]
+
+        plt.figure(figsize=(6,6))
         for i in range(images.shape[0]):
             plt.subplot(4, 4, i+1)
-            image = images[i, :, :, :]
+            if i < 8:
+                image = images[i, :, :, :]
+            else:
+                image = fake_images[i, :, :, :]
             image = np.reshape(image, [self.img_rows, self.img_cols])
             plt.imshow(image, cmap='gray')
             plt.axis('off')
@@ -157,6 +159,6 @@ class GAN():
 
 if __name__=='__main__':
     GAN = GAN((28,28,1), 64)
-    GAN.train(10, 265)
+    GAN.train(5000, 265)
     GAN.plot_images(fake=True)
-    GAN.plot_images(fake=False, save2file=False)
+    #GAN.plot_images(fake=False, save2file=False)
